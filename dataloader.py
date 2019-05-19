@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-class batchsampler:
+class datasampler:
     def __init__(self, dataframe, features, labels, batchsize, shuffle = True):
         self.df = dataframe
         self.features = features

@@ -1,4 +1,5 @@
 # homegrown
-Classifier algorithm built from scratch
+Machine learning algorithms built from scratch
 
-A simple classification algorithm using only numpy and pandas (no pytorch or tensorflow). For pedagogical purposes.
+mlp.py - Multi-layered perceptron
+gbdt.py - Gradient boosted decision trees
