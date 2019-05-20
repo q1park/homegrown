@@ -57,10 +57,17 @@ def qrelative_entropy(y, output):
     assert y.shape == output.shape
     eps = 1e-16
     y = np.piecewise(y,[y<eps, y>=eps], [lambda x: eps, lambda x: x])
-    output = np.piecewise(output,[output<eps, output>=eps], [lambda x: eps, lambda x: x])
-    error = (1/len(y))*np.sum([y[i]*np.log(y[i]/output[i]) for i in range(len(y))])
-    derror = -(1/len(y))*np.array([y[i]/output[i] for i in range(len(y))]).reshape(len(y), 1)
-    return error, derror
+    
+    if output is None:
+        output = np.random.uniform(eps, 1-eps, size = y.shape)
+    else:
+        output = np.piecewise(output,[output<eps, output>=eps], [lambda x: eps, lambda x: x])
+    
+    S = (1/len(y))*np.sum([y[i]*np.log(y[i]/output[i]) for i in range(len(y))])
+    dS = -(1/len(y))*np.array([y[i]/output[i] for i in range(len(y))]).reshape(len(y), 1)
+    ddS = (1/len(y))*np.array([y[i]/output[i]**2 for i in range(len(y))]).reshape(len(y), 1)
+    
+    return S, dS, ddS
      
 ## Linear Perception Layer
 class linear:
@@ -118,7 +125,7 @@ class network:
         for x in self.layers:
             state = self.layers[x][0](state)
             
-        loss, dloss = qrelative_entropy(iY, state)
+        loss, dloss, _ = qrelative_entropy(iY, state)
         
         dchain = np.sum(dloss*self.layers[self.nlayers][0].sgrad, axis = 0)
         dchain = dchain.reshape(len(dchain), 1)
